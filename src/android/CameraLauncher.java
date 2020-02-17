@@ -103,9 +103,11 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
 
     //Where did this come from?
     private static final int CROP_CAMERA = 100;
+    private String caption; // caption to write over camera
 
     private static final String TIME_FORMAT = "yyyyMMdd_HHmmss";
-
+    private static Toast toast;
+    private static CountDownTimer toastCountDown;
     private int mQuality;                   // Compression quality hint (0-100: 0=low quality & high compression, 100=compress of max quality)
     private int targetWidth;                // desired width of the image
     private int targetHeight;               // desired height of the image
@@ -156,6 +158,7 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
             this.encodingType = JPEG;
             this.mediaType = PICTURE;
             this.mQuality = 50;
+            this.caption = "";
 
             //Take the values from the arguments if they're not already defined (this is tricky)
             this.destType = args.getInt(1);
@@ -168,6 +171,7 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
             this.allowEdit = args.getBoolean(7);
             this.correctOrientation = args.getBoolean(8);
             this.saveToPhotoAlbum = args.getBoolean(9);
+            this.caption = args.getString(10);
 
             // If the user specifies a 0 or smaller width/height
             // make it -1 so later comparisons succeed
@@ -313,6 +317,10 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
             if(intent.resolveActivity(mPm) != null)
             {
                 this.cordova.startActivityForResult((CordovaPlugin) this, intent, (CAMERA + 1) * 16 + returnType + 1);
+
+                if (caption != null && !caption.isEmpty()) {
+                    showCameraCaption();
+                }
             }
             else
             {
@@ -332,6 +340,58 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
     private File createCaptureFile(int encodingType) {
         return createCaptureFile(encodingType, "");
     }
+
+    /**
+     * Show camera caption.
+     *
+     */
+    private void showCameraCaption() {
+        Context context = this.cordova.getActivity().getApplicationContext();
+
+        RelativeLayout layout = new RelativeLayout(this.cordova.getActivity());
+        layout.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+         
+        layout.setBackgroundColor(Color.parseColor("#80000000"));
+
+        TextView text = new TextView(this.cordova.getActivity());
+        text.setPadding(50, 10, 50, 10);
+        text.setText(caption);
+        layout.addView(text);
+
+        toast = new Toast(context);
+        toast.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL, 0, 0);
+        toast.setDuration(Toast.LENGTH_LONG);
+        toast.setView(layout);
+        //Toast.makeText(context, caption, Toast.LENGTH_LONG).show();
+         
+        // Set the countdown to display the toast
+        toastCountDown = new CountDownTimer(300000, 3000 /*Tick duration*/) {
+          public void onTick(long millisUntilFinished) {
+            toast.show();
+          }
+          public void onFinish() {
+            toast.cancel();
+          }
+        };
+
+        // Show the toast and starts the countdown
+        toast.show();
+        toastCountDown.start();
+    }
+
+    /**
+     * Hide camera caption.
+     *
+     */
+    private void hideCameraCaption() {
+        if (toast != null) {
+            toast.cancel();
+        }
+        if (toastCountDown != null) {
+            toastCountDown.cancel();
+        }
+    }
+
 
     /**
      * Create a file in the applications temporary directory based upon the supplied encoding.
@@ -763,6 +823,8 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
      * @param intent      An Intent, which can return result data to the caller (various data can be attached to Intent "extras").
      */
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+
+        hideCameraCaption();
 
         // Get src and dest types from request code for a Camera Activity
         int srcType = (requestCode / 16) - 1;

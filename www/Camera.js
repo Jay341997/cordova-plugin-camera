@@ -135,7 +135,7 @@ cameraExport.getPicture = function (successCallback, errorCallback, options) {
     argscheck.checkArgs('fFO', 'Camera.getPicture', arguments);
     options = options || {};
     var getValue = argscheck.getValue;
-
+    var caption = options.caption || "";
     var quality = getValue(options.quality, 50);
     var destinationType = getValue(options.destinationType, Camera.DestinationType.FILE_URI);
     var sourceType = getValue(options.sourceType, Camera.PictureSourceType.CAMERA);
@@ -150,7 +150,7 @@ cameraExport.getPicture = function (successCallback, errorCallback, options) {
     var cameraDirection = getValue(options.cameraDirection, Camera.Direction.BACK);
 
     var args = [quality, destinationType, sourceType, targetWidth, targetHeight, encodingType,
-        mediaType, allowEdit, correctOrientation, saveToPhotoAlbum, popoverOptions, cameraDirection];
+        mediaType, allowEdit, correctOrientation, saveToPhotoAlbum, caption, popoverOptions, cameraDirection];
 
     exec(successCallback, errorCallback, 'Camera', 'takePicture', args);
     // XXX: commented out
