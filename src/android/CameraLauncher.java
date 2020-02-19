@@ -39,6 +39,17 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.util.Base64;
+import android.widget.Toast;  
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
+import android.view.ViewGroup;
+import android.graphics.Color;
+import android.content.Context;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.RelativeLayout;
+import android.os.CountDownTimer;
 
 import org.apache.cordova.BuildHelper;
 import org.apache.cordova.CallbackContext;
@@ -359,10 +370,9 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
         layout.addView(text);
 
         toast = new Toast(context);
-        toast.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL, 0, 0);
+        toast.setGravity(Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, 0, 100);
         toast.setDuration(Toast.LENGTH_LONG);
         toast.setView(layout);
-        //Toast.makeText(context, caption, Toast.LENGTH_LONG).show();
          
         // Set the countdown to display the toast
         toastCountDown = new CountDownTimer(300000, 3000 /*Tick duration*/) {
