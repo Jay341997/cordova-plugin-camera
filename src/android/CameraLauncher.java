@@ -368,14 +368,13 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
         text.setPadding(50, 10, 50, 10);
         text.setText(caption);
         layout.addView(text);
-
         toast = new Toast(context);
         toast.setGravity(Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, 0, 100);
         toast.setDuration(Toast.LENGTH_LONG);
         toast.setView(layout);
-         
+
         // Set the countdown to display the toast
-        toastCountDown = new CountDownTimer(300000, 3000 /*Tick duration*/) {
+        toastCountDown = new CountDownTimer(300000, 3600 /*Tick duration*/) {
           public void onTick(long millisUntilFinished) {
             toast.show();
           }
